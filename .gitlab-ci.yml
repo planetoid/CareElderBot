@@ -1,0 +1,24 @@
+# Select image from https://hub.docker.com/r/_/php/
+image: php:7.2
+
+before_script:
+  # Install dependencies
+  - bash ci/docker_install.sh > /dev/null
+  # show version of Linux, python and nginx
+  - cat /etc/*-release
+  # > Debian GNU/Linux 9 (stretch)
+  # Show versions
+  - php -v
+  - cp config.example.php config.php
+
+after_script:
+  # PHP Code Sniffier
+  - phpcs --config-set ignore_errors_on_exit 1
+  - phpcs --config-set ignore_warnings_on_exit 1
+  - phpcs --standard=style_ruleset.xml src
+
+
+test:CareElderBot:
+  script:
+  - phpunit --configuration ./phpunit_myapp.xml --coverage-text --colors=never
+
